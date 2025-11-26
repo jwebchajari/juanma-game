@@ -1,4 +1,7 @@
 "use client";
+export const metadata = {
+    dynamic: "force-dynamic",
+};
 
 export const dynamic = "force-dynamic";
 
@@ -138,3 +141,7 @@ export default function ResultPage() {
         </div>
     );
 }
+
+
+export const fetchCache = "force-no-store";
+export const revalidate = 0;
