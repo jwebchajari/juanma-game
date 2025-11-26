@@ -1,0 +1,78 @@
+.container {
+    max-width: 380px;
+    margin: 40px auto;
+    padding: 28px;
+    background: #ffffff;
+    border-radius: 20px;
+    box-shadow: 0 6px 25px rgba(0, 0, 0, 0.12);
+    text-align: center;
+}
+
+.title {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: #4C6EF5;
+    margin-bottom: 10px;
+}
+
+.score {
+    font-size: 3.5rem;
+    font-weight: 800;
+    color: #4C6EF5;
+    margin: 10px 0 18px;
+}
+
+.bad {
+    color: #e03131 !important;
+}
+
+.successMsg {
+    font-size: 1rem;
+    color: #4C6EF5;
+    font-weight: 600;
+    margin-bottom: 12px;
+}
+
+.failMsg {
+    font-size: 1rem;
+    color: #e03131;
+    margin-bottom: 12px;
+}
+
+.qrBox {
+    background: white;
+    padding: 18px;
+    border-radius: 14px;
+    border: 1px solid #eaeaea;
+    display: inline-block;
+    margin: 12px auto;
+}
+
+.qrText {
+    font-size: 0.85rem;
+    color: #666;
+    margin-top: 6px;
+}
+
+.whatsappBtn {
+    width: 100%;
+    padding: 14px;
+    margin-top: 20px;
+    font-weight: 600;
+    background: #4C6EF5;
+    color: white;
+    border: none;
+    border-radius: 14px;
+    transition: 0.2s ease;
+}
+
+.whatsappBtn:hover {
+    background: #3b5bda;
+}
+
+.savedText {
+    font-size: 0.9rem;
+    margin-top: 10px;
+    color: #845EF7;
+    font-weight: 500;
+}

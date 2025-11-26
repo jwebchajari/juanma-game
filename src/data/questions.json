@@ -1,0 +1,77 @@
+[
+	{
+		"text": "¿Qué deporte no hice nunca?",
+		"options": ["Básquet", "Bochas", "Vóley", "Rugby"],
+		"correctIndex": 2
+	},
+	{
+		"text": "¿Qué día es mi cumpleaños?",
+		"options": ["3/12", "8/12", "7/12", "4/12"],
+		"correctIndex": 0
+	},
+	{
+		"text": "¿Cuál de estas facultades no pisé nunca?",
+		"options": [
+			"Económicas",
+			"Derecho",
+			"Odontología",
+			"Cs de la Computación"
+		],
+		"correctIndex": 0
+	},
+	{
+		"text": "Si estoy en una carrera y paso al que va 2°, ¿en qué posición quedo?",
+		"options": ["Primero", "Segundo", "Tercero"],
+		"correctIndex": 1
+	},
+	{
+		"text": "¿Cuál es el dominio de mi emprendimiento?",
+		"options": [
+			"smartpet.com",
+			"smartpetrosario.com",
+			"tagsmartpet.com",
+			"smartpet.com.ar"
+		],
+		"correctIndex": 2
+	},
+	{
+		"text": "Si Minerva tenía 3 años cuando la adopté, ¿cuántos años cumple en enero?",
+		"options": ["7", "6", "5", "8"],
+		"correctIndex": 0
+	},
+	{
+		"text": "¿Por qué Minerva se llama Minerva?",
+		"options": [
+			"Por una botellita de limón chiquita y amarilla",
+			"Diosa romana",
+			"Por la diosa de los limones",
+			"Diosa griega"
+		],
+		"correctIndex": 1
+	},
+	{
+		"text": "Siempre tuve trabajos malos y mal pagados, pero ¿cuál fue el peor?",
+		"options": [
+			"Canela Fina",
+			"King Beer",
+			"Auckland Turismo",
+			"Musimundo / On City"
+		],
+		"correctIndex": 0
+	},
+	{
+		"text": "“L - M - M - J …” ¿Qué letra sigue?",
+		"options": ["V", "S", "P", "T"],
+		"correctIndex": 0
+	},
+	{
+		"text": "¿La suma de los cuadrados de los catetos A y B es igual a la raíz cuadrada de la hipotenusa?",
+		"options": ["Verdadero", "Falso"],
+		"correctIndex": 1
+	},
+	{
+		"text": "¿Cuál es lo más parecido a mi color favorito?",
+		"options": ["Azul", "Violeta", "Rojo", "Blanco"],
+		"correctIndex": 0
+	}
+]

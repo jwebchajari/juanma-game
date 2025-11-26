@@ -1,0 +1,160 @@
+.container {
+    max-width: 1100px;
+    margin: 40px auto;
+    padding: 16px;
+}
+
+.title {
+    text-align: center;
+    font-size: 2rem;
+    font-weight: 800;
+    color: #4C6EF5;
+    margin-bottom: 30px;
+}
+
+.card {
+    background: #ffffff;
+    padding: 24px;
+    border-radius: 20px;
+    margin-bottom: 32px;
+    box-shadow: 0 6px 25px rgba(0, 0, 0, 0.08);
+}
+
+.sectionTitle {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #845EF7;
+    margin-bottom: 16px;
+}
+
+.tableWrapper {
+    overflow-x: auto;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table th {
+    background: #4C6EF5;
+    color: white;
+    padding: 10px;
+    text-align: left;
+}
+
+.table td {
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+.table tr:hover {
+    background: #f1f3ff;
+}
+
+.viewBtn {
+    background: #845EF7;
+    border: none;
+    padding: 6px 12px;
+    color: white;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.viewBtn:hover {
+    background: #7448e6;
+}
+
+/* MODAL */
+.modalOverlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(20, 20, 40, 0.65);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 16px;
+}
+
+.modal {
+    background: white;
+    padding: 24px;
+    border-radius: 20px;
+    max-width: 600px;
+    width: 100%;
+    max-height: 85vh;
+    overflow-y: auto;
+}
+
+.modalTitle {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #4C6EF5;
+    margin-bottom: 6px;
+}
+
+.modalSub {
+    color: #666;
+    font-size: 0.95rem;
+    margin-bottom: 16px;
+}
+
+/* RESPUESTAS */
+.answersList {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.answerCard {
+    background: #f6f7ff;
+    padding: 14px;
+    border-radius: 12px;
+}
+
+.qText {
+    font-weight: 700;
+    margin-bottom: 6px;
+}
+
+.userAnswer {
+    margin-bottom: 6px;
+    font-weight: 600;
+}
+
+.correct {
+    color: #3cb65e;
+}
+
+.incorrect {
+    color: #e03131;
+}
+
+.correctAnswer {
+    font-size: 0.9rem;
+    color: #4C6EF5;
+}
+
+.closeBtn {
+    margin-top: 16px;
+    width: 100%;
+    padding: 12px;
+    border: none;
+    background: #4C6EF5;
+    color: white;
+    font-weight: 600;
+    border-radius: 12px;
+    cursor: pointer;
+}
+
+.closeBtn:hover {
+    background: #3b5bda;
+}
+
+.loading,
+.denied {
+    margin-top: 80px;
+    text-align: center;
+    font-size: 1.2rem;
+    color: #845EF7;
+}
