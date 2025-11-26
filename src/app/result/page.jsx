@@ -1,6 +1,6 @@
-
-
 "use client";
+
+export const dynamic = "force-dynamic";
 
 import { useSearchParams, useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
@@ -11,6 +11,8 @@ import { addDoc, collection, Timestamp } from "firebase/firestore";
 import QRCode from "react-qr-code";
 import Loader from "@/components/Loader";
 import styles from "./page.module.css";
+
+import questions from "@/data/questions.json";
 
 export default function ResultPage() {
     const router = useRouter();
@@ -25,16 +27,14 @@ export default function ResultPage() {
     const [saving, setSaving] = useState(true);
     const [passed, setPassed] = useState(false);
 
-    const inviteUrl = "https://i.pinimg.com/236x/bb/52/4a/bb524a9c1d64543ec05c05299d9f300b.jpg";
-
+    const inviteUrl =
+        "https://i.pinimg.com/236x/bb/52/4a/bb524a9c1d64543ec05c05299d9f300b.jpg";
 
     useEffect(() => {
         if (!answers.length) {
             router.push("/game");
             return;
         }
-
-        const questions = require("@/data/questions.json");
 
         // Calcular puntaje
         let correct = 0;
@@ -46,7 +46,7 @@ export default function ResultPage() {
         setScore(s);
         setPassed(s >= 70);
 
-        // Guardar intento
+        // Guardar intento en Firestore
         const saveAttempt = async () => {
             const user = auth.currentUser;
             if (!user) return;
@@ -97,12 +97,17 @@ export default function ResultPage() {
 
                 {passed ? (
                     <>
-                        <p className={styles.passMsg}>🎉 ¡Felicitaciones! Superaste el 70%</p>
+                        <p className={styles.passMsg}>
+                            🎉 ¡Felicitaciones! Superaste el 70%
+                        </p>
 
                         <div className={styles.qrBox}>
                             <QRCode value={inviteUrl} size={140} />
                         </div>
-                        <p className={styles.qrText}>Mostrá este código para ver tu invitación</p>
+
+                        <p className={styles.qrText}>
+                            Mostrá este código para ver tu invitación
+                        </p>
 
                         <p className={styles.assistNote}>
                             Tocá el botón de WhatsApp para confirmar asistencia 👇
@@ -114,7 +119,7 @@ export default function ResultPage() {
                             No llegaste al 70%, podés intentarlo de nuevo.
                         </p>
 
-                        {/* 🔵 BOTÓN REINTENTAR */}
+                        {/* BOTÓN REINTENTAR */}
                         <button
                             className={styles.retryBtn}
                             onClick={() => router.push("/game")}
@@ -123,7 +128,6 @@ export default function ResultPage() {
                         </button>
                     </>
                 )}
-
 
                 <button className={styles.whatsBtn} onClick={shareWhatsApp}>
                     Enviar WhatsApp
