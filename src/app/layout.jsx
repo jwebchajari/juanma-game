@@ -4,21 +4,21 @@ export const metadata = {
   openGraph: {
     title: "Quiz de Juanma",
     description: "¿Cuánto conocés a Juanma?",
+    type: "website",
     images: [
       {
-        url: "/juanma.jpg", // ← tu foto (ponela en /public)
+        url: "https://juanma-game.vercel.app/juanma.png", // ← tu foto en /public
         width: 1200,
         height: 630,
         alt: "Juanma",
       },
     ],
-    type: "website",
   },
   twitter: {
     card: "summary_large_image",
     title: "Quiz de Juanma",
     description: "¿Cuánto conocés a Juanma?",
-    images: ["/juanma.jpg"],
+    images: ["hhttps://juanma-game.vercel.app//juanma.png"],
   },
   icons: {
     icon: "/icon-192.png",
@@ -28,9 +28,8 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="es">
+    <html lang="es" suppressHydrationWarning>
       <body
-        suppressHydrationWarning={true}
         style={{
           background: "#F3F6FA",
           color: "#1A1A1A",
