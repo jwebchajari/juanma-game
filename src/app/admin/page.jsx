@@ -1,5 +1,7 @@
 "use client";
 
+export const dynamic = "force-dynamic";
+
 import { useEffect, useState } from "react";
 import { auth, db } from "@/lib/firebase";
 import { onAuthStateChanged } from "firebase/auth";
@@ -8,7 +10,6 @@ import {
     getDocs,
     query,
     orderBy,
-    where,
     updateDoc,
     doc
 } from "firebase/firestore";
@@ -55,48 +56,49 @@ export default function AdminPage() {
     if (loading) return <div className={styles.loading}>Cargando...</div>;
     if (notAdmin) return <div className={styles.denied}>Acceso restringido 🔒</div>;
 
-    // Agrupar por usuario
+    // ============================ AGRUPAR INTENTOS POR USUARIO ============================
     const users = {};
     attempts.forEach((a) => {
         if (!users[a.email]) users[a.email] = [];
         users[a.email].push(a);
     });
 
-    // ===== ESTADÍSTICAS =====
+    // ============================ ESTADÍSTICAS ============================
     const total = attempts.length;
     const approved = attempts.filter((a) => a.passed).length;
     const failed = total - approved;
-    const avg =
-        total > 0
-            ? Math.round(attempts.reduce((acc, a) => acc + a.score, 0) / total)
-            : 0;
+    const avg = total > 0
+        ? Math.round(attempts.reduce((acc, a) => acc + a.score, 0) / total)
+        : 0;
 
-    // ===== ANALISIS DE PREGUNTAS =====
-    const questionStats = questions.map(() => ({ hits: 0, misses: 0 }));
+    // ============================ ANALISIS DE PREGUNTAS ============================
+    const stats = questions.map(() => ({ hits: 0, misses: 0 }));
 
     attempts.forEach((att) => {
         att.answers.forEach((ans, i) => {
             const correct = questions[i].correctIndex;
-            if (ans === correct) questionStats[i].hits++;
-            else questionStats[i].misses++;
+            if (ans === correct) stats[i].hits++;
+            else stats[i].misses++;
         });
     });
 
-    const mostFailed = [...questionStats]
+    const mostFailed = [...stats]
         .map((s, i) => ({ ...s, index: i }))
         .sort((a, b) => b.misses - a.misses);
 
-    const mostCorrect = [...questionStats]
+    const mostCorrect = [...stats]
         .map((s, i) => ({ ...s, index: i }))
         .sort((a, b) => b.hits - a.hits);
 
-    // autorizar más intentos
-    const enableMoreAttempts = async (email) => {
-        const req = requests.find((r) => r.email === email);
-        if (req) {
-            await updateDoc(doc(db, "attemptRequests", req.id), { approved: true });
+    // ============================ APROBAR SOLICITUD ============================
+    const enableMoreAttempts = async (req) => {
+        try {
+            await updateDoc(doc(db, "attemptRequests", req.id), {
+                approved: true,
+            });
+        } catch (err) {
+            console.error(err);
         }
-        alert("Intentos adicionales autorizados ✔");
     };
 
     return (
@@ -105,34 +107,19 @@ export default function AdminPage() {
 
             {/* ====== ESTADÍSTICAS ====== */}
             <div className={styles.statsGrid}>
-                <div className={styles.statCard}>
-                    <h3>Personas únicas</h3>
-                    <p>{Object.keys(users).length}</p>
-                </div>
-                <div className={styles.statCard}>
-                    <h3>Total intentos</h3>
-                    <p>{total}</p>
-                </div>
-                <div className={styles.statCard}>
-                    <h3>Aprobados</h3>
-                    <p>{approved}</p>
-                </div>
-                <div className={styles.statCard}>
-                    <h3>Desaprobados</h3>
-                    <p>{failed}</p>
-                </div>
-                <div className={styles.statCard}>
-                    <h3>Promedio</h3>
-                    <p>{avg}%</p>
-                </div>
+                <div className={styles.statCard}><h3>Personas únicas</h3><p>{Object.keys(users).length}</p></div>
+                <div className={styles.statCard}><h3>Total intentos</h3><p>{total}</p></div>
+                <div className={styles.statCard}><h3>Aprobados</h3><p>{approved}</p></div>
+                <div className={styles.statCard}><h3>Desaprobados</h3><p>{failed}</p></div>
+                <div className={styles.statCard}><h3>Promedio</h3><p>{avg}%</p></div>
             </div>
 
-            {/* ===== PREGUNTAS MÁS FALLADAS / MÁS ACERTADAS ===== */}
+            {/* ====== PREGUNTAS MÁS FALLADAS / ACERTADAS ====== */}
             <div className={styles.statsSection}>
                 <h2 className={styles.sectionTitle}>Preguntas más falladas</h2>
                 {mostFailed.slice(0, 3).map((q, i) => (
                     <div key={i} className={styles.statItem}>
-                        <strong>{i + 1}. {questions[q.index].text}</strong>
+                        <strong>{i + 1}. {questions[q.index].question}</strong>
                         <p>Falladas: {q.misses}</p>
                     </div>
                 ))}
@@ -140,27 +127,24 @@ export default function AdminPage() {
                 <h2 className={styles.sectionTitle}>Preguntas más acertadas</h2>
                 {mostCorrect.slice(0, 3).map((q, i) => (
                     <div key={i} className={styles.statItem}>
-                        <strong>{i + 1}. {questions[q.index].text}</strong>
+                        <strong>{i + 1}. {questions[q.index].question}</strong>
                         <p>Acertadas: {q.hits}</p>
                     </div>
                 ))}
             </div>
 
-            {/* ===== LISTA DE USUARIOS ===== */}
+            {/* ====== LISTADO DE USUARIOS ====== */}
             {!selectedUser ? (
                 <>
                     <h2 className={styles.sectionTitle}>Personas</h2>
-
                     <div className={styles.cardList}>
                         {Object.keys(users).map((email) => {
                             const list = users[email];
-                            const displayName = list[0]?.displayName || "";
                             const req = requests.find((r) => r.email === email);
 
                             return (
                                 <div key={email} className={styles.userCard}>
-                                    <h3>{displayName}</h3>
-                                    <p>{email}</p>
+                                    <h3>{email}</h3>
                                     <p>Intentos: {list.length}</p>
 
                                     {req && (
@@ -179,9 +163,9 @@ export default function AdminPage() {
                                     {req && (
                                         <button
                                             className={styles.enableBtn}
-                                            onClick={() => enableMoreAttempts(email)}
+                                            onClick={() => enableMoreAttempts(req)}
                                         >
-                                            Autorizar más intentos
+                                            Autorizar intentos
                                         </button>
                                     )}
                                 </div>
@@ -202,23 +186,22 @@ export default function AdminPage() {
 
                     {users[selectedUser].map((a, idx) => (
                         <div key={idx} className={styles.attemptBox}>
-                            <h3>Intento {a.attempt} — {a.score}%</h3>
+                            <h3>Intento — {a.score}%</h3>
 
                             {a.answers.map((ans, i) => {
                                 const q = questions[i];
-                                const userAns = q.options[ans];
-                                const correctAns = q.options[q.correctIndex];
-
                                 return (
                                     <div key={i} className={styles.answerItem}>
-                                        <p><strong>{i + 1}. {q.text}</strong></p>
+                                        <p><strong>{i + 1}. {q.question}</strong></p>
 
                                         <p className={ans === q.correctIndex ? styles.correct : styles.incorrect}>
-                                            Respuesta: {userAns}
+                                            Respuesta: {q.options[ans]}
                                         </p>
 
                                         {ans !== q.correctIndex && (
-                                            <p className={styles.correctShow}>Correcta: {correctAns}</p>
+                                            <p className={styles.correctShow}>
+                                                Correcta: {q.options[q.correctIndex]}
+                                            </p>
                                         )}
                                     </div>
                                 );

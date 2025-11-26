@@ -1,11 +1,15 @@
 "use client";
 
+export const dynamic = "force-dynamic";
+
 import { useEffect, useState } from "react";
 import { auth } from "@/lib/firebase";
 import { onAuthStateChanged } from "firebase/auth";
+
 import Quiz from "@/components/Quiz";
 import Loader from "@/components/Loader";
 import Link from "next/link";
+
 import questions from "@/data/questions.json";
 
 export default function GamePage() {
@@ -46,7 +50,7 @@ export default function GamePage() {
                 </h2>
 
                 <p style={{ color: "#555", marginBottom: "20px" }}>
-                    Iniciá sesión para jugar el quiz.
+                    Iniciá sesión para jugar.
                 </p>
 
                 <Link
