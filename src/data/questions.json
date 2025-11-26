@@ -73,5 +73,97 @@
 		"text": "¿Cuál es lo más parecido a mi color favorito?",
 		"options": ["Azul", "Violeta", "Rojo", "Blanco"],
 		"correctIndex": 0
+	},
+
+	{
+		"text": "¿Hincha de qué club de fútbol soy?",
+		"options": ["Independiente", "San Lorenzo", "Boca", "River"],
+		"correctIndex": 3
+	},
+	{
+		"text": "¿A qué escuela primaria asistí?",
+		"options": ["Marista", "IMA", "San José", "Comercio"],
+		"correctIndex": 1
+	},
+	{
+		"text": "En mi paso universitario, ¿con qué ideología participé en política universitaria?",
+		"options": ["Peronismo", "Socialismo", "Radicalismo", "Kirchnerismo"],
+		"correctIndex": 1
+	},
+	{
+		"text": "¿Cuál de estas series consumo más?",
+		"options": [
+			"South Park",
+			"Rick and Morty",
+			"Los Simpsons",
+			"Padre de familia"
+		],
+		"correctIndex": 2
+	},
+	{
+		"text": "¿Cuántos hermanos tengo en total?",
+		"options": ["1", "2", "3", "Hijo único"],
+		"correctIndex": 1
+	},
+	{
+		"text": "Trabajé 3 temporadas en Brasil, ¿a qué lugar fui primero?",
+		"options": ["Florianópolis", "São Paulo", "Bombinhas", "Camboriú"],
+		"correctIndex": 0
+	},
+	{
+		"text": "¿Cuál de estos países me gustaría conocer más?",
+		"options": ["Estados Unidos", "Italia", "Francia", "Inglaterra"],
+		"correctIndex": 1
+	},
+	{
+		"text": "¿Cuántos tornillos tiene Minerva en su caderita?",
+		"options": ["3", "2", "Los tiene en la pata", "Ninguno"],
+		"correctIndex": 1
+	},
+	{
+		"text": "¿Qué tolero menos?",
+		"options": [
+			"La gente impuntual",
+			"La gente agrandada",
+			"La gente boluda",
+			"Todas son correctas"
+		],
+		"correctIndex": 3
+	},
+	{
+		"text": "Hay una bebida que no tolero ni el olor, ¿cuál es?",
+		"options": ["Whisky", "Gin", "Fernet", "Ginebra"],
+		"correctIndex": 0
+	},
+	{
+		"text": "¿Qué carrera universitaria comencé al dejar Derecho?",
+		"options": [
+			"Analista universitario en sistemas",
+			"Ingeniería",
+			"Odontología",
+			"Licenciatura en Cs de la Computación"
+		],
+		"correctIndex": 3
+	},
+	{
+		"text": "¿Con cuál de estas personas NO tengo una foto?",
+		"options": [
+			"Pablo Javkin (intendente de Rosario)",
+			"Alberto Fernández (expresidente)",
+			"El Francés (de Los Auténticos Decadentes)",
+			"Nacho Scocco (exjugador de Newell's)"
+		],
+		"correctIndex": 3
+	},
+
+	{
+		"text": "Teniendo en cuenta que me gusta el revisionismo histórico, ¿cuál es la figura que más me gusta de la historia argentina?",
+		"options": [
+			"Ángel Vicente \"El Chacho\" Peñaloza",
+			"Francisco \"Pancho\" Ramírez",
+			"Martín Miguel de Güemes",
+			"Hipólito Bouchard"
+		],
+		"correctIndex": 2
 	}
 ]

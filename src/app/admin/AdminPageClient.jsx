@@ -64,10 +64,7 @@ export default function AdminPageClient() {
     const total = attempts.length;
     const approved = attempts.filter((a) => a.passed).length;
     const failed = total - approved;
-    const avg =
-        total > 0
-            ? Math.round(attempts.reduce((acc, a) => acc + a.score, 0) / total)
-            : 0;
+    const avg = total > 0 ? Math.round(attempts.reduce((acc, a) => acc + a.score, 0) / total) : 0;
 
     const stats = questions.map(() => ({ hits: 0, misses: 0 }));
 
@@ -131,7 +128,7 @@ export default function AdminPageClient() {
                 {mostFailed.slice(0, 3).map((q, i) => (
                     <div key={i} className={styles.statItem}>
                         <strong>
-                            {i + 1}. {questions[q.index].question}
+                            {i + 1}. {questions[q.index].text}
                         </strong>
                         <p>Falladas: {q.misses}</p>
                     </div>
@@ -141,7 +138,7 @@ export default function AdminPageClient() {
                 {mostCorrect.slice(0, 3).map((q, i) => (
                     <div key={i} className={styles.statItem}>
                         <strong>
-                            {i + 1}. {questions[q.index].question}
+                            {i + 1}. {questions[q.index].text}
                         </strong>
                         <p>Acertadas: {q.hits}</p>
                     </div>
@@ -211,7 +208,7 @@ export default function AdminPageClient() {
                                     <div key={i} className={styles.answerItem}>
                                         <p>
                                             <strong>
-                                                {i + 1}. {q.question}
+                                                {i + 1}. {q.text}
                                             </strong>
                                         </p>
 
