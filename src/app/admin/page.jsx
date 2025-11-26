@@ -8,7 +8,9 @@ import {
     getDocs,
     query,
     orderBy,
-    where
+    where,
+    updateDoc,
+    doc
 } from "firebase/firestore";
 
 import styles from "./page.module.css";
@@ -16,10 +18,11 @@ import questions from "@/data/questions.json";
 
 export default function AdminPage() {
     const [attempts, setAttempts] = useState([]);
+    const [requests, setRequests] = useState([]);
+
     const [loading, setLoading] = useState(true);
     const [notAdmin, setNotAdmin] = useState(false);
-
-    const [selectedAttempt, setSelectedAttempt] = useState(null);
+    const [selectedUser, setSelectedUser] = useState(null);
 
     useEffect(() => {
         const unsub = onAuthStateChanged(auth, async (user) => {
@@ -30,17 +33,17 @@ export default function AdminPage() {
             }
 
             try {
-                const q = query(
-                    collection(db, "attempts"),
-                    orderBy("createdAt", "desc")
+                const attSnap = await getDocs(
+                    query(collection(db, "attempts"), orderBy("createdAt", "desc"))
                 );
-                const snap = await getDocs(q);
+                setAttempts(attSnap.docs.map((d) => ({ id: d.id, ...d.data() })));
 
-                const data = snap.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-                setAttempts(data);
+                const reqSnap = await getDocs(collection(db, "attemptRequests"));
+                setRequests(reqSnap.docs.map((d) => ({ id: d.id, ...d.data() })));
+
                 setLoading(false);
-            } catch (err) {
-                console.error(err);
+            } catch (e) {
+                console.error(e);
                 setNotAdmin(true);
                 setLoading(false);
             }
@@ -49,112 +52,182 @@ export default function AdminPage() {
         return () => unsub();
     }, []);
 
-    if (loading) return <div className={styles.loading}>Cargando panel admin...</div>;
+    if (loading) return <div className={styles.loading}>Cargando...</div>;
+    if (notAdmin) return <div className={styles.denied}>Acceso restringido 🔒</div>;
 
-    if (notAdmin)
-        return (
-            <div className={styles.denied}>
-                Acceso restringido 🔒
-                <br />
-                Solo administrador autorizado.
-            </div>
-        );
+    // Agrupar por usuario
+    const users = {};
+    attempts.forEach((a) => {
+        if (!users[a.email]) users[a.email] = [];
+        users[a.email].push(a);
+    });
+
+    // ===== ESTADÍSTICAS =====
+    const total = attempts.length;
+    const approved = attempts.filter((a) => a.passed).length;
+    const failed = total - approved;
+    const avg =
+        total > 0
+            ? Math.round(attempts.reduce((acc, a) => acc + a.score, 0) / total)
+            : 0;
+
+    // ===== ANALISIS DE PREGUNTAS =====
+    const questionStats = questions.map(() => ({ hits: 0, misses: 0 }));
+
+    attempts.forEach((att) => {
+        att.answers.forEach((ans, i) => {
+            const correct = questions[i].correctIndex;
+            if (ans === correct) questionStats[i].hits++;
+            else questionStats[i].misses++;
+        });
+    });
+
+    const mostFailed = [...questionStats]
+        .map((s, i) => ({ ...s, index: i }))
+        .sort((a, b) => b.misses - a.misses);
+
+    const mostCorrect = [...questionStats]
+        .map((s, i) => ({ ...s, index: i }))
+        .sort((a, b) => b.hits - a.hits);
+
+    // autorizar más intentos
+    const enableMoreAttempts = async (email) => {
+        const req = requests.find((r) => r.email === email);
+        if (req) {
+            await updateDoc(doc(db, "attemptRequests", req.id), { approved: true });
+        }
+        alert("Intentos adicionales autorizados ✔");
+    };
 
     return (
         <div className={styles.container}>
-            <h1 className={styles.title}>Panel Admin — SmartPet</h1>
+            <h1 className={styles.title}>Panel Admin</h1>
 
-            {/* TABLA DE INTENTOS */}
-            <div className={styles.card}>
-                <h2 className={styles.sectionTitle}>Intentos registrados</h2>
-
-                <div className={styles.tableWrapper}>
-                    <table className={styles.table}>
-                        <thead>
-                            <tr>
-                                <th>Nombre</th>
-                                <th>Email</th>
-                                <th>Puntaje</th>
-                                <th>Intento</th>
-                                <th>Invitado</th>
-                                <th>Respuestas</th>
-                            </tr>
-                        </thead>
-
-                        <tbody>
-                            {attempts.map((a) => (
-                                <tr key={a.id}>
-                                    <td>{a.displayName}</td>
-                                    <td>{a.email}</td>
-                                    <td>{a.score}%</td>
-                                    <td>{a.attempt}</td>
-                                    <td>{a.passed ? "✔️" : "❌"}</td>
-
-                                    <td>
-                                        <button
-                                            className={styles.viewBtn}
-                                            onClick={() => setSelectedAttempt(a)}
-                                        >
-                                            Ver
-                                        </button>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
+            {/* ====== ESTADÍSTICAS ====== */}
+            <div className={styles.statsGrid}>
+                <div className={styles.statCard}>
+                    <h3>Personas únicas</h3>
+                    <p>{Object.keys(users).length}</p>
+                </div>
+                <div className={styles.statCard}>
+                    <h3>Total intentos</h3>
+                    <p>{total}</p>
+                </div>
+                <div className={styles.statCard}>
+                    <h3>Aprobados</h3>
+                    <p>{approved}</p>
+                </div>
+                <div className={styles.statCard}>
+                    <h3>Desaprobados</h3>
+                    <p>{failed}</p>
+                </div>
+                <div className={styles.statCard}>
+                    <h3>Promedio</h3>
+                    <p>{avg}%</p>
                 </div>
             </div>
 
-            {/* MODAL DE DETALLE DE RESPUESTAS */}
-            {selectedAttempt && (
-                <div className={styles.modalOverlay} onClick={() => setSelectedAttempt(null)}>
-                    <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
-                        <h2 className={styles.modalTitle}>
-                            Respuestas de {selectedAttempt.displayName}
-                        </h2>
+            {/* ===== PREGUNTAS MÁS FALLADAS / MÁS ACERTADAS ===== */}
+            <div className={styles.statsSection}>
+                <h2 className={styles.sectionTitle}>Preguntas más falladas</h2>
+                {mostFailed.slice(0, 3).map((q, i) => (
+                    <div key={i} className={styles.statItem}>
+                        <strong>{i + 1}. {questions[q.index].text}</strong>
+                        <p>Falladas: {q.misses}</p>
+                    </div>
+                ))}
 
-                        <p className={styles.modalSub}>
-                            Intento Nº {selectedAttempt.attempt} — Puntaje: {selectedAttempt.score}%
-                        </p>
+                <h2 className={styles.sectionTitle}>Preguntas más acertadas</h2>
+                {mostCorrect.slice(0, 3).map((q, i) => (
+                    <div key={i} className={styles.statItem}>
+                        <strong>{i + 1}. {questions[q.index].text}</strong>
+                        <p>Acertadas: {q.hits}</p>
+                    </div>
+                ))}
+            </div>
 
-                        <div className={styles.answersList}>
-                            {selectedAttempt.answers.map((ans, index) => {
-                                const q = questions[index];
-                                const userAnswer = q.options[ans];
-                                const correctAnswer = q.options[q.correctIndex];
-                                const isCorrect = ans === q.correctIndex;
+            {/* ===== LISTA DE USUARIOS ===== */}
+            {!selectedUser ? (
+                <>
+                    <h2 className={styles.sectionTitle}>Personas</h2>
+
+                    <div className={styles.cardList}>
+                        {Object.keys(users).map((email) => {
+                            const list = users[email];
+                            const displayName = list[0]?.displayName || "";
+                            const req = requests.find((r) => r.email === email);
+
+                            return (
+                                <div key={email} className={styles.userCard}>
+                                    <h3>{displayName}</h3>
+                                    <p>{email}</p>
+                                    <p>Intentos: {list.length}</p>
+
+                                    {req && (
+                                        <p className={styles.requestNote}>
+                                            Solicitó más intentos
+                                        </p>
+                                    )}
+
+                                    <button
+                                        className={styles.viewBtn}
+                                        onClick={() => setSelectedUser(email)}
+                                    >
+                                        Ver detalles
+                                    </button>
+
+                                    {req && (
+                                        <button
+                                            className={styles.enableBtn}
+                                            onClick={() => enableMoreAttempts(email)}
+                                        >
+                                            Autorizar más intentos
+                                        </button>
+                                    )}
+                                </div>
+                            );
+                        })}
+                    </div>
+                </>
+            ) : (
+                <>
+                    <button
+                        className={styles.backBtn}
+                        onClick={() => setSelectedUser(null)}
+                    >
+                        ← Volver
+                    </button>
+
+                    <h2 className={styles.sectionTitle}>Intentos de {selectedUser}</h2>
+
+                    {users[selectedUser].map((a, idx) => (
+                        <div key={idx} className={styles.attemptBox}>
+                            <h3>Intento {a.attempt} — {a.score}%</h3>
+
+                            {a.answers.map((ans, i) => {
+                                const q = questions[i];
+                                const userAns = q.options[ans];
+                                const correctAns = q.options[q.correctIndex];
 
                                 return (
-                                    <div key={index} className={styles.answerCard}>
-                                        <h4 className={styles.qText}>
-                                            {index + 1}. {q.text}
-                                        </h4>
+                                    <div key={i} className={styles.answerItem}>
+                                        <p><strong>{i + 1}. {q.text}</strong></p>
 
-                                        <p
-                                            className={`${styles.userAnswer} ${isCorrect ? styles.correct : styles.incorrect
-                                                }`}
-                                        >
-                                            Respuesta: {userAnswer}
+                                        <p className={ans === q.correctIndex ? styles.correct : styles.incorrect}>
+                                            Respuesta: {userAns}
                                         </p>
 
-                                        {!isCorrect && (
-                                            <p className={styles.correctAnswer}>
-                                                Correcta: {correctAnswer}
-                                            </p>
+                                        {ans !== q.correctIndex && (
+                                            <p className={styles.correctShow}>Correcta: {correctAns}</p>
                                         )}
                                     </div>
                                 );
                             })}
-                        </div>
 
-                        <button
-                            className={styles.closeBtn}
-                            onClick={() => setSelectedAttempt(null)}
-                        >
-                            Cerrar
-                        </button>
-                    </div>
-                </div>
+                            <hr />
+                        </div>
+                    ))}
+                </>
             )}
         </div>
     );

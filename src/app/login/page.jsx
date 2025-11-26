@@ -9,8 +9,12 @@ export default function LoginPage() {
     const router = useRouter();
 
     const handleLogin = async () => {
-        await signInWithPopup(auth, provider);
-        router.push("/game");
+        try {
+            await signInWithPopup(auth, provider);
+            router.push("/game");
+        } catch (error) {
+            console.error("Error en login:", error);
+        }
     };
 
     return (
@@ -20,13 +24,20 @@ export default function LoginPage() {
                 Iniciá sesión para ver qué tanto me conocés 😏
             </p>
 
-            <button className={styles.googleBtn} onClick={handleLogin}>
-                <img
-                    className={styles.googleIcon}
-                    src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
-                    alt="Google"
-                />
-                Continuar con Google
+            <button
+                onClick={handleLogin}  // 👈 ESTO FALTABA
+                style={{
+                    background: "#1B4D89",
+                    padding: "14px 22px",
+                    borderRadius: "10px",
+                    border: "none",
+                    color: "white",
+                    fontWeight: "600",
+                    fontSize: "1rem",
+                    cursor: "pointer",
+                }}
+            >
+                Iniciar sesión
             </button>
         </div>
     );

@@ -1,0 +1,47 @@
+.container {
+    padding: 20px;
+    min-height: 100vh;
+    background: #F3F6FA;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.card {
+    width: 100%;
+    max-width: 380px;
+    background: white;
+    padding: 28px;
+    border-radius: 20px;
+    text-align: center;
+    box-shadow: 0 6px 22px rgba(0, 0, 0, 0.08);
+}
+
+.title {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #1B4D89;
+    margin-bottom: 12px;
+}
+
+.subtitle {
+    color: #555;
+    margin-bottom: 22px;
+    font-size: 0.95rem;
+}
+
+.loginBtn {
+    width: 100%;
+    background: #1B4D89;
+    color: white;
+    border: none;
+    padding: 14px;
+    border-radius: 12px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.loginBtn:hover {
+    opacity: 0.9;
+}
