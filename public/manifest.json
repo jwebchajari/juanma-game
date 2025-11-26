@@ -1,11 +1,13 @@
 {
 	"name": "Quiz de Juanma",
-	"short_name": "Quiz Juanma",
+	"short_name": "QuizJuanma",
+	"description": "¿Cuánto conocés a Juanma? Completá el quiz.",
 	"start_url": "/",
+	"scope": "/",
 	"display": "standalone",
-	"orientation": "portrait",
-	"background_color": "#F3F6FA",
 	"theme_color": "#1B4D89",
+	"background_color": "#F3F6FA",
+	"orientation": "portrait",
 	"icons": [
 		{
 			"src": "/icon-192.png",
