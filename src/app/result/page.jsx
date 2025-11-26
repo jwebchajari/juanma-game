@@ -1,21 +1,18 @@
 "use client";
-export const metadata = {
-    dynamic: "force-dynamic",
-};
 
 export const dynamic = "force-dynamic";
+export const revalidate = 0;
+export const fetchCache = "force-no-store";
 
 import { useSearchParams, useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
-
 import { auth, db } from "@/lib/firebase";
 import { addDoc, collection, Timestamp } from "firebase/firestore";
-
 import QRCode from "react-qr-code";
 import Loader from "@/components/Loader";
 import styles from "./page.module.css";
-
 import questions from "@/data/questions.json";
+
 
 export default function ResultPage() {
     const router = useRouter();
