@@ -12,7 +12,6 @@ import { addDoc, collection, Timestamp } from "firebase/firestore";
 import QRCode from "react-qr-code";
 import Loader from "@/components/Loader";
 import styles from "./page.module.css";
-import questions from "@/data/questions.json";
 
 export default function ResultPage() {
     const router = useRouter();
@@ -23,6 +22,7 @@ export default function ResultPage() {
         return a ? JSON.parse(a) : [];
     }, [params]);
 
+    const [questions, setQuestions] = useState([]);
     const [score, setScore] = useState(null);
     const [saving, setSaving] = useState(true);
     const [passed, setPassed] = useState(false);
@@ -30,11 +30,20 @@ export default function ResultPage() {
     const inviteUrl = "/juanma.png";
 
     useEffect(() => {
+        // cargar JSON dinámico (no lo importamos)
+        const q = require("@/data/questions.json");
+        setQuestions(q);
+    }, []);
+
+    useEffect(() => {
+        if (questions.length === 0) return;
+
         if (!answers.length) {
             router.push("/game");
             return;
         }
 
+        // Calcular puntaje
         let correct = 0;
         questions.forEach((q, i) => {
             if (answers[i] === q.correctIndex) correct++;
@@ -44,6 +53,7 @@ export default function ResultPage() {
         setScore(s);
         setPassed(s >= 70);
 
+        // Guardar intento
         const saveAttempt = async () => {
             const user = auth.currentUser;
             if (!user) return;
@@ -62,7 +72,7 @@ export default function ResultPage() {
         };
 
         saveAttempt();
-    }, [answers, router]);
+    }, [answers, questions, router]);
 
     const shareWhatsApp = () => {
         const msg = passed
@@ -73,7 +83,7 @@ export default function ResultPage() {
         window.open(`https://wa.me/?text=${text}`, "_blank");
     };
 
-    if (score === null) return <Loader text="Cargando resultado..." />;
+    if (score === null) return <Loader text="Calculando resultado..." />;
 
     return (
         <div className={styles.container}>
@@ -98,7 +108,7 @@ export default function ResultPage() {
                         </p>
 
                         <div className={styles.qrBox}>
-                            <QRCode value={inviteUrl} size={140} />
+                            <QRCode value={inviteUrl} size={150} />
                         </div>
 
                         <p className={styles.qrText}>
@@ -108,7 +118,7 @@ export default function ResultPage() {
                 ) : (
                     <>
                         <p className={styles.failMsg}>
-                            No llegaste al 70%, podés volver a intentar.
+                            No llegaste al 70%, podés intentarlo de nuevo.
                         </p>
 
                         <button
@@ -121,10 +131,10 @@ export default function ResultPage() {
                 )}
 
                 <button className={styles.whatsBtn} onClick={shareWhatsApp}>
-                    Enviar por WhatsApp
+                    Enviar WhatsApp
                 </button>
 
-                {!saving && <p className={styles.saved}>Guardado ✔</p>}
+                {!saving && <p className={styles.saved}>Intento guardado ✔</p>}
             </div>
         </div>
     );
