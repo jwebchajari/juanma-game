@@ -8,11 +8,11 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { auth, db } from "@/lib/firebase";
 import { addDoc, collection, Timestamp } from "firebase/firestore";
+
 import QRCode from "react-qr-code";
 import Loader from "@/components/Loader";
 import styles from "./page.module.css";
 import questions from "@/data/questions.json";
-
 
 export default function ResultPage() {
     const router = useRouter();
@@ -27,8 +27,7 @@ export default function ResultPage() {
     const [saving, setSaving] = useState(true);
     const [passed, setPassed] = useState(false);
 
-    const inviteUrl =
-        "https://i.pinimg.com/236x/bb/52/4a/bb524a9c1d64543ec05c05299d9f300b.jpg";
+    const inviteUrl = "/juanma.png";
 
     useEffect(() => {
         if (!answers.length) {
@@ -36,7 +35,6 @@ export default function ResultPage() {
             return;
         }
 
-        // Calcular puntaje
         let correct = 0;
         questions.forEach((q, i) => {
             if (answers[i] === q.correctIndex) correct++;
@@ -46,7 +44,6 @@ export default function ResultPage() {
         setScore(s);
         setPassed(s >= 70);
 
-        // Guardar intento en Firestore
         const saveAttempt = async () => {
             const user = auth.currentUser;
             if (!user) return;
@@ -70,13 +67,13 @@ export default function ResultPage() {
     const shareWhatsApp = () => {
         const msg = passed
             ? `Acabo de sacar ${score}% en el quiz de cumple de Juanma 🎉\n\nConfirmo asistencia ✔`
-            : `Saqué ${score}% en el quiz de cumple 😅`;
+            : `Saqué ${score}% en el quiz 😅`;
 
         const text = encodeURIComponent(msg);
         window.open(`https://wa.me/?text=${text}`, "_blank");
     };
 
-    if (score === null) return <Loader text="Calculando resultado..." />;
+    if (score === null) return <Loader text="Cargando resultado..." />;
 
     return (
         <div className={styles.container}>
@@ -87,7 +84,6 @@ export default function ResultPage() {
                     <span>{score}%</span>
                 </div>
 
-                {/* Barra de progreso */}
                 <div className={styles.progressBar}>
                     <div
                         className={styles.progressFill}
@@ -106,20 +102,15 @@ export default function ResultPage() {
                         </div>
 
                         <p className={styles.qrText}>
-                            Mostrá este código para ver tu invitación
-                        </p>
-
-                        <p className={styles.assistNote}>
-                            Tocá el botón de WhatsApp para confirmar asistencia 👇
+                            Mostrá este QR para ver tu invitación
                         </p>
                     </>
                 ) : (
                     <>
                         <p className={styles.failMsg}>
-                            No llegaste al 70%, podés intentarlo de nuevo.
+                            No llegaste al 70%, podés volver a intentar.
                         </p>
 
-                        {/* BOTÓN REINTENTAR */}
                         <button
                             className={styles.retryBtn}
                             onClick={() => router.push("/game")}
@@ -130,15 +121,11 @@ export default function ResultPage() {
                 )}
 
                 <button className={styles.whatsBtn} onClick={shareWhatsApp}>
-                    Enviar WhatsApp
+                    Enviar por WhatsApp
                 </button>
 
-                {!saving && <p className={styles.saved}>Intento guardado ✔</p>}
+                {!saving && <p className={styles.saved}>Guardado ✔</p>}
             </div>
         </div>
     );
 }
-
-
-export const fetchCache = "force-no-store";
-export const revalidate = 0;
